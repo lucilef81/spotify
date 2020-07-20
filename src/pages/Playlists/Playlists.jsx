@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   View, Text, StyleSheet, Image, ScrollView,
 } from 'react-native';
 
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import theme from '../../styles';
 
 const styles = StyleSheet.create({
@@ -33,7 +35,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Playlists = () => {
+const Playlists = ({ navigation }) => {
   const [playlists, setPlaylists] = useState([]);
   const [title, setTitle] = useState('');
 
@@ -55,12 +57,24 @@ const Playlists = () => {
       <ScrollView>
         <View style={styles.covers}>
           {playlists.map((p) => (
-            <Image style={styles.cover} source={{ uri: p.images[0].url }} />
+            <TouchableOpacity onPress={() => navigation.navigate('playlist', { playlistId: p.id })}>
+              <Image
+                style={styles.cover}
+                source={{ uri: p.images[0].url }}
+              />
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
     </View>
   );
+};
+
+Playlists.propTypes = {
+  navigation: PropTypes.object.isRequired,
+};
+
+Playlists.defaultProps = {
 };
 
 export default Playlists;
