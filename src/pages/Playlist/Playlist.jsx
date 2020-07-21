@@ -49,11 +49,13 @@ const Playlist = () => {
   const { setCurrentTrack, currentPlaylist } = usePlayer();
 
   useEffect(() => {
+    // Set playlist in state when context playlist is loaded
     currentPlaylist && setPlaylist(currentPlaylist);
   }, [currentPlaylist, setPlaylist]);
 
   return (
     <View style={commonStyles.container}>
+      {/* Display only if current playlist exists */}
       {playlist && (
         <View>
           <View style={styles.header}>
@@ -87,6 +89,7 @@ const Playlist = () => {
             <View style={styles.tracks}>
               {playlist.tracks.items.map((item, index) => (
                 <>
+                  {/* Track is clickable only if playable */}
                   {item.track.preview_url ? (
                     <TouchableOpacity onPress={() => setCurrentTrack({ ...item.track, index })}>
                       <View style={styles.track} key={`track-${item.track.id}`}>

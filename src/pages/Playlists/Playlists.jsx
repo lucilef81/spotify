@@ -38,10 +38,12 @@ const Playlists = ({ navigation }) => {
   const { setPlaylist } = usePlayer();
 
   useEffect(() => {
+    // Get all playlists from api
     const getPlaylists = async () => {
       const res = await fetch('https://afternoon-waters-49321.herokuapp.com/v1/browse/featured-playlists');
       const data = await res.json();
 
+      // Set data from api in state
       setPlaylists(data.playlists.items);
       setTitle(data.message);
     };
@@ -49,6 +51,7 @@ const Playlists = ({ navigation }) => {
     getPlaylists();
   }, []);
 
+  // Set current playlist in context and go to playlist view
   const onPlaylistPress = (id) => {
     setPlaylist(id);
     navigation.navigate('playlist');
