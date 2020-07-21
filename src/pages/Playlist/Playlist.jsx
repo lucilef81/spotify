@@ -6,8 +6,11 @@ import {
   ScrollView,
   StyleSheet,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+
+import useCurrentTrack from '../../contexts/TrackContext';
 
 import commonStyles from '../../styles/commonStyles';
 import theme from '../../styles';
@@ -45,6 +48,7 @@ const styles = StyleSheet.create({
 const Playlist = ({ route }) => {
   const [playlist, setPlaylist] = useState(null);
   const { playlistId } = route.params;
+  const { setCurrentTrack } = useCurrentTrack();
 
   useEffect(() => {
     const getPlaylist = async () => {
@@ -91,18 +95,28 @@ const Playlist = ({ route }) => {
           <ScrollView>
             <View style={styles.tracks}>
               {playlist.tracks.items.map((item) => (
-                <View style={styles.track} key={`track-${item.track.id}`}>
-                  <Text
-                    style={item.track.preview_url ? commonStyles.trackName : commonStyles.disabled}
-                  >
-                    {item.track.name}
-                  </Text>
-                  <Text
-                    style={item.track.preview_url ? commonStyles.artistName : commonStyles.disabled}
-                  >
-                    {item.track.artists[0].name}
-                  </Text>
-                </View>
+                <TouchableOpacity onPress={() => setCurrentTrack(item.track)}>
+                  <View style={styles.track} key={`track-${item.track.id}`}>
+                    <Text
+                      style={
+                        item.track.preview_url
+                          ? commonStyles.trackName
+                          : commonStyles.disabled
+                      }
+                    >
+                      {item.track.name}
+                    </Text>
+                    <Text
+                      style={
+                        item.track.preview_url
+                          ? commonStyles.artistName
+                          : commonStyles.disabled
+                      }
+                    >
+                      {item.track.artists[0].name}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               ))}
             </View>
           </ScrollView>

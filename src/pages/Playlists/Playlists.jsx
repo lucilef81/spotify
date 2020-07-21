@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  View, Text, StyleSheet, Image, ScrollView,
+  View, Text, StyleSheet, Image, ScrollView, TouchableOpacity,
 } from 'react-native';
 
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import useCurrentTrack from '../../contexts/TrackContext';
+
 import commonStyles from '../../styles/commonStyles';
 import theme from '../../styles';
 
@@ -34,6 +35,7 @@ const styles = StyleSheet.create({
 const Playlists = ({ navigation }) => {
   const [playlists, setPlaylists] = useState([]);
   const [title, setTitle] = useState('');
+  const { setCurrentPlaylist } = useCurrentTrack();
 
   useEffect(() => {
     const getPlaylists = async () => {
@@ -47,13 +49,18 @@ const Playlists = ({ navigation }) => {
     getPlaylists();
   }, []);
 
+  const onPlaylistPress = (playlist) => {
+    setCurrentPlaylist(playlist);
+    navigation.navigate('playlist', { playlistId: playlist.id });
+  };
+
   return (
     <View style={[commonStyles.container, styles.wrapper]}>
       <Text style={styles.title}>{title}</Text>
       <ScrollView>
         <View style={styles.covers}>
           {playlists.map((p) => (
-            <TouchableOpacity onPress={() => navigation.navigate('playlist', { playlistId: p.id })}>
+            <TouchableOpacity onPress={() => onPlaylistPress(p)}>
               <Image
                 style={styles.cover}
                 source={{ uri: p.images[0].url }}

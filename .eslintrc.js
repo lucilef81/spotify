@@ -19,6 +19,7 @@ module.exports = {
   ],
   rules: {
     'no-return-assign': 0,
+    'no-unused-expressions': 0,
     'react/forbid-prop-types': 0,
   },
 };
