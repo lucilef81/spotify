@@ -5,17 +5,13 @@ import {
 } from 'react-native';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import commonStyles from '../../styles/commonStyles';
 import theme from '../../styles';
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: theme.topPadding,
+  wrapper: {
     paddingHorizontal: theme.sizes.medium,
-    paddingBottom: theme.sizes.large,
-    backgroundColor: theme.colors.black,
-    flex: 1,
   },
-
   title: {
     color: theme.colors.light,
     fontSize: theme.sizes.medium,
@@ -52,7 +48,7 @@ const Playlists = ({ navigation }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[commonStyles.container, styles.wrapper]}>
       <Text style={styles.title}>{title}</Text>
       <ScrollView>
         <View style={styles.covers}>

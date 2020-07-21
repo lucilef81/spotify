@@ -13,13 +13,6 @@ import commonStyles from '../../styles/commonStyles';
 import theme from '../../styles';
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: theme.topPadding,
-    paddingBottom: theme.sizes.large,
-    backgroundColor: theme.colors.black,
-    flex: 1,
-  },
-
   header: {
     flexDirection: 'row',
     height: 150,
@@ -39,18 +32,6 @@ const styles = StyleSheet.create({
 
   track: {
     marginBottom: theme.sizes.small,
-  },
-
-  trackName: {
-    color: theme.colors.light,
-  },
-
-  artistName: {
-    color: theme.colors.grey,
-  },
-
-  disabled: {
-    color: '#666',
   },
 
   cover: {
@@ -79,7 +60,7 @@ const Playlist = ({ route }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.container}>
       {playlist && (
         <View>
           <View style={styles.header}>
@@ -111,11 +92,13 @@ const Playlist = ({ route }) => {
             <View style={styles.tracks}>
               {playlist.tracks.items.map((item) => (
                 <View style={styles.track} key={`track-${item.track.id}`}>
-                  <Text style={item.track.preview_url ? styles.trackName : styles.disabled}>
+                  <Text
+                    style={item.track.preview_url ? commonStyles.trackName : commonStyles.disabled}
+                  >
                     {item.track.name}
                   </Text>
                   <Text
-                    style={item.track.preview_url ? styles.artistName : styles.disabled}
+                    style={item.track.preview_url ? commonStyles.artistName : commonStyles.disabled}
                   >
                     {item.track.artists[0].name}
                   </Text>
