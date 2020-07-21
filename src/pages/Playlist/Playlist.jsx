@@ -1,23 +1,63 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
 import {
-  View, Text, ScrollView, StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
+import commonStyles from '../../styles/commonStyles';
 import theme from '../../styles';
 
 const styles = StyleSheet.create({
   container: {
     paddingTop: theme.topPadding,
-    paddingHorizontal: theme.sizes.medium,
     paddingBottom: theme.sizes.large,
     backgroundColor: theme.colors.black,
     flex: 1,
   },
 
-  text: {
+  header: {
+    flexDirection: 'row',
+    height: 150,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+
+  meta: {
+    width: '60%',
+  },
+
+  tracks: {
+    paddingTop: 30,
+    paddingBottom: 150,
+    paddingHorizontal: theme.sizes.medium,
+  },
+
+  track: {
+    marginBottom: theme.sizes.small,
+  },
+
+  trackName: {
     color: theme.colors.light,
+  },
+
+  artistName: {
+    color: theme.colors.grey,
+  },
+
+  disabled: {
+    color: '#666',
+  },
+
+  cover: {
+    width: 120,
+    height: 120,
+    marginBottom: theme.sizes.small,
+    marginRight: theme.sizes.small,
   },
 });
 
@@ -27,7 +67,9 @@ const Playlist = ({ route }) => {
 
   useEffect(() => {
     const getPlaylist = async () => {
-      const res = await fetch(`https://afternoon-waters-49321.herokuapp.com/v1/playlists/${playlistId}`);
+      const res = await fetch(
+        `https://afternoon-waters-49321.herokuapp.com/v1/playlists/${playlistId}`,
+      );
       const data = await res.json();
 
       setPlaylist(data);
@@ -39,11 +81,49 @@ const Playlist = ({ route }) => {
   return (
     <View style={styles.container}>
       {playlist && (
-        <ScrollView>
-          <View>
-            <Text style={styles.text}>{playlist.name}</Text>
+        <View>
+          <View style={styles.header}>
+            <LinearGradient
+              colors={['black', 'green']}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                right: 0,
+                height: 150,
+              }}
+            />
+            <Image
+              style={styles.cover}
+              source={{ uri: playlist.images[0].url }}
+            />
+            <View style={styles.meta}>
+              <Text style={[commonStyles.textLight, commonStyles.title]}>{playlist.name}</Text>
+              <Text style={commonStyles.textLight}>{`Playlist by ${playlist.owner.display_name}`}</Text>
+
+              <Text style={commonStyles.textLight}>{playlist.description}</Text>
+              <Text style={commonStyles.textLight}>
+                {`${playlist.followers.total} followers`}
+              </Text>
+            </View>
           </View>
-        </ScrollView>
+          <ScrollView>
+            <View style={styles.tracks}>
+              {playlist.tracks.items.map((item) => (
+                <View style={styles.track} key={`track-${item.track.id}`}>
+                  <Text style={item.track.preview_url ? styles.trackName : styles.disabled}>
+                    {item.track.name}
+                  </Text>
+                  <Text
+                    style={item.track.preview_url ? styles.artistName : styles.disabled}
+                  >
+                    {item.track.artists[0].name}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
       )}
     </View>
   );

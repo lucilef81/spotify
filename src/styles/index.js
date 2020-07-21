@@ -10,6 +10,7 @@ const theme = {
   colors: {
     black: '#000',
     light: '#f4f4f4',
+    grey: '#aaa',
   },
 };
 
