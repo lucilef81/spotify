@@ -92,6 +92,7 @@ const Player = () => {
 
         // If a current track exists in context, load it in the player
         currentTrack && loadAudio();
+        setIsPlaying(true);
       } catch (e) {
         console.log(e);
       }
