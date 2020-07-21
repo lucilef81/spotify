@@ -4,7 +4,7 @@ import {
   View, Text, StyleSheet, Image, ScrollView, TouchableOpacity,
 } from 'react-native';
 
-import useCurrentTrack from '../../contexts/TrackContext';
+import usePlayer from '../../contexts/PlayerContext';
 
 import commonStyles from '../../styles/commonStyles';
 import theme from '../../styles';
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 const Playlists = ({ navigation }) => {
   const [playlists, setPlaylists] = useState([]);
   const [title, setTitle] = useState('');
-  const { setCurrentPlaylist } = useCurrentTrack();
+  const { setPlaylist } = usePlayer();
 
   useEffect(() => {
     const getPlaylists = async () => {
@@ -49,9 +49,9 @@ const Playlists = ({ navigation }) => {
     getPlaylists();
   }, []);
 
-  const onPlaylistPress = (playlist) => {
-    setCurrentPlaylist(playlist);
-    navigation.navigate('playlist', { playlistId: playlist.id });
+  const onPlaylistPress = (id) => {
+    setPlaylist(id);
+    navigation.navigate('playlist');
   };
 
   return (
@@ -60,7 +60,7 @@ const Playlists = ({ navigation }) => {
       <ScrollView>
         <View style={styles.covers}>
           {playlists.map((p) => (
-            <TouchableOpacity onPress={() => onPlaylistPress(p)}>
+            <TouchableOpacity onPress={() => onPlaylistPress(p.id)}>
               <Image
                 style={styles.cover}
                 source={{ uri: p.images[0].url }}

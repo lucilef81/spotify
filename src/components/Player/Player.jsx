@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Audio } from 'expo-av';
 import {
@@ -6,7 +6,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import useCurrentTrack from '../../contexts/TrackContext';
+import { set } from 'react-native-reanimated';
+import usePlayer from '../../contexts/PlayerContext';
 
 import commonStyles from '../../styles/commonStyles';
 
@@ -33,21 +34,21 @@ const styles = StyleSheet.create({
 });
 
 const Player = () => {
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [playbackInstance, setPlaybackInstance] = useState(null);
   const [volume, setVolume] = useState(1.0);
   const [isBuffering, setIsBuffering] = useState(false);
-  const { currentTrack } = useCurrentTrack();
+  const { currentTrack, setCurrentTrack, currentPlaylist } = usePlayer();
 
   const onPlaybackStatusUpdate = (status) => {
     setIsBuffering(status.isBuffering);
   };
 
-  const loadAudio = async () => {
+  const loadAudio = async (track) => {
     try {
       const instance = new Audio.Sound();
       const source = {
-        uri: currentTrack.preview_url,
+        uri: track ? track.preview_url : currentTrack.preview_url,
       };
 
       const status = {
@@ -88,13 +89,30 @@ const Player = () => {
   }, [currentTrack]);
 
   const handlePlayPause = async () => {
-    console.log(isPlaying);
     if (isPlaying) {
       await playbackInstance.pauseAsync();
-    } else {
+    } else if (!isBuffering) {
       await playbackInstance.playAsync();
     }
     setIsPlaying(!isPlaying);
+  };
+
+  const handlePrevious = () => {
+    const playables = currentPlaylist.tracks.items.filter((item) => item.track.preview_url);
+    let index = playables.findIndex((item) => item.track.id === currentTrack.id);
+    if (index === 0) {
+      index = playables.length;
+    }
+    setCurrentTrack(playables[index - 1].track);
+  };
+
+  const handleNext = () => {
+    const playables = currentPlaylist.tracks.items.filter((item) => item.track.preview_url);
+    let index = playables.findIndex((item) => item.track.id === currentTrack.id);
+    if (index === playables.length - 1) {
+      index = -1;
+    }
+    setCurrentTrack(playables[index + 1].track);
   };
 
   return (
@@ -106,7 +124,7 @@ const Player = () => {
           <Text style={commonStyles.artistName}>{currentTrack.artists[0].name}</Text>
         </View>
         <View style={styles.controls}>
-          <TouchableOpacity style={styles.control} onPress={() => alert('')}>
+          <TouchableOpacity style={styles.control} onPress={() => handlePrevious()}>
             <Ionicons name="ios-skip-backward" size={24} color="green" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.control} onPress={() => handlePlayPause()}>
@@ -116,7 +134,7 @@ const Player = () => {
               <Ionicons name="ios-play" size={24} color="green" />
             )}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.control} onPress={() => alert('')}>
+          <TouchableOpacity style={styles.control} onPress={() => handleNext()}>
             <Ionicons name="ios-skip-forward" size={24} color="green" />
           </TouchableOpacity>
         </View>

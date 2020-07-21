@@ -22,7 +22,6 @@ const Routing = () => (
         />
         <Stack.Screen
           name="playlist"
-          initialParams={{ playlistId: null }}
           component={Playlist}
         />
       </Stack.Navigator>

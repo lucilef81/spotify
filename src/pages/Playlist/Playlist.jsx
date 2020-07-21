@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import {
   View,
   Text,
@@ -10,7 +9,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import useCurrentTrack from '../../contexts/TrackContext';
+import usePlayer from '../../contexts/PlayerContext';
 
 import commonStyles from '../../styles/commonStyles';
 import theme from '../../styles';
@@ -45,23 +44,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const Playlist = ({ route }) => {
+const Playlist = () => {
   const [playlist, setPlaylist] = useState(null);
-  const { playlistId } = route.params;
-  const { setCurrentTrack } = useCurrentTrack();
+  const { setCurrentTrack, currentPlaylist } = usePlayer();
 
   useEffect(() => {
-    const getPlaylist = async () => {
-      const res = await fetch(
-        `https://afternoon-waters-49321.herokuapp.com/v1/playlists/${playlistId}`,
-      );
-      const data = await res.json();
-
-      setPlaylist(data);
-    };
-
-    getPlaylist();
-  }, []);
+    currentPlaylist && setPlaylist(currentPlaylist);
+  }, [currentPlaylist, setPlaylist]);
 
   return (
     <View style={commonStyles.container}>
@@ -83,8 +72,10 @@ const Playlist = ({ route }) => {
               source={{ uri: playlist.images[0].url }}
             />
             <View style={styles.meta}>
-              <Text style={[commonStyles.textLight, commonStyles.title]}>{playlist.name}</Text>
-              <Text style={commonStyles.textLight}>{`Playlist by ${playlist.owner.display_name}`}</Text>
+              <Text style={[commonStyles.textLight, commonStyles.title]}>
+                {playlist.name}
+              </Text>
+              <Text style={commonStyles.textLight}>{`playlist by ${playlist.owner.display_name}`}</Text>
 
               <Text style={commonStyles.textLight}>{playlist.description}</Text>
               <Text style={commonStyles.textLight}>
@@ -94,29 +85,38 @@ const Playlist = ({ route }) => {
           </View>
           <ScrollView>
             <View style={styles.tracks}>
-              {playlist.tracks.items.map((item) => (
-                <TouchableOpacity onPress={() => setCurrentTrack(item.track)}>
-                  <View style={styles.track} key={`track-${item.track.id}`}>
-                    <Text
-                      style={
-                        item.track.preview_url
-                          ? commonStyles.trackName
-                          : commonStyles.disabled
-                      }
-                    >
-                      {item.track.name}
-                    </Text>
-                    <Text
-                      style={
-                        item.track.preview_url
-                          ? commonStyles.artistName
-                          : commonStyles.disabled
-                      }
-                    >
-                      {item.track.artists[0].name}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
+              {playlist.tracks.items.map((item, index) => (
+                <>
+                  {item.track.preview_url ? (
+                    <TouchableOpacity onPress={() => setCurrentTrack({ ...item.track, index })}>
+                      <View style={styles.track} key={`track-${item.track.id}`}>
+                        <Text
+                          style={commonStyles.trackName}
+                        >
+                          {item.track.name}
+                        </Text>
+                        <Text
+                          style={commonStyles.artistName}
+                        >
+                          {item.track.artists[0].name}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={styles.track} key={`track-${item.track.id}`}>
+                      <Text
+                        style={commonStyles.disabled}
+                      >
+                        {item.track.name}
+                      </Text>
+                      <Text
+                        style={commonStyles.disabled}
+                      >
+                        {item.track.artists[0].name}
+                      </Text>
+                    </View>
+                  )}
+                </>
               ))}
             </View>
           </ScrollView>
@@ -124,10 +124,6 @@ const Playlist = ({ route }) => {
       )}
     </View>
   );
-};
-
-Playlist.propTypes = {
-  route: PropTypes.object.isRequired,
 };
 
 export default Playlist;
