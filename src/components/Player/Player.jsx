@@ -4,15 +4,14 @@ import {
   StyleSheet, TouchableOpacity, View, Text,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Progress from 'react-native-progress';
 
 import usePlayer from '../../contexts/PlayerContext';
 
 import commonStyles from '../../styles/commonStyles';
 
 const styles = StyleSheet.create({
-  player: {
-    borderTopWidth: 2,
-    borderTopColor: 'green',
+  content: {
     flexDirection: 'row',
     backgroundColor: 'black',
     alignItems: 'center',
@@ -149,26 +148,40 @@ const Player = () => {
     <>
       {/* Don't display player if no current track */}
       {currentTrack && (
-      <View style={styles.player}>
-        <View style={styles.meta}>
-          <Text style={commonStyles.trackName}>{currentTrack.name}</Text>
-          <Text style={commonStyles.artistName}>{currentTrack.artists[0].name}</Text>
+      <View>
+        <View style={styles.duration}>
+          <Progress.Bar
+            animated
+            progress={currentTrack.track.duration_ms}
+            height={2}
+            width={null}
+            color="green"
+            unfilledColor="black"
+            borderColor="black"
+
+          />
         </View>
-        <View style={styles.controls}>
-          <TouchableOpacity style={styles.control} onPress={() => handlePrevious()}>
-            <Ionicons name="ios-skip-backward" size={24} color="green" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.control} onPress={() => handlePlayPause()}>
-            {/* Change icon based on player status */}
-            {isPlaying ? (
-              <Ionicons name="ios-pause" size={24} color="green" />
-            ) : (
-              <Ionicons name="ios-play" size={24} color="green" />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.control} onPress={() => handleNext()}>
-            <Ionicons name="ios-skip-forward" size={24} color="green" />
-          </TouchableOpacity>
+        <View style={styles.content}>
+          <View style={styles.meta}>
+            <Text style={commonStyles.trackName}>{currentTrack.name}</Text>
+            <Text style={commonStyles.artistName}>{currentTrack.artists[0].name}</Text>
+          </View>
+          <View style={styles.controls}>
+            <TouchableOpacity style={styles.control} onPress={() => handlePrevious()}>
+              <Ionicons name="ios-skip-backward" size={24} color="green" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.control} onPress={() => handlePlayPause()}>
+              {/* Change icon based on player status */}
+              {isPlaying ? (
+                <Ionicons name="ios-pause" size={24} color="green" />
+              ) : (
+                <Ionicons name="ios-play" size={24} color="green" />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.control} onPress={() => handleNext()}>
+              <Ionicons name="ios-skip-forward" size={24} color="green" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
       )}
